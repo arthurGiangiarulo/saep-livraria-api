@@ -1,12 +1,12 @@
-import { asyncHandler } from '../middlewares/asyncHandler';
+import type { Request, Response } from 'express';
 import { LivroModel, type NovoLivro } from '../models/livro';
 
-export const listarLivros = asyncHandler(async (_req, res) => {
+export async function listarLivros(_req: Request, res: Response): Promise<void> {
   const livros = await LivroModel.listar();
   res.json(livros);
-});
+}
 
-export const mostrarLivro = asyncHandler(async (req, res) => {
+export async function mostrarLivro(req: Request, res: Response): Promise<void> {
   const id = Number(req.params.id);
   const livro = await LivroModel.pegarPorId(id);
   if (!livro) {
@@ -14,15 +14,15 @@ export const mostrarLivro = asyncHandler(async (req, res) => {
     return;
   }
   res.json(livro);
-});
+}
 
-export const criarLivro = asyncHandler(async (req, res) => {
+export async function criarLivro(req: Request, res: Response): Promise<void> {
   const dados = req.body as NovoLivro;
   const livro = await LivroModel.criar(dados);
   res.status(201).json(livro);
-});
+}
 
-export const atualizarLivro = asyncHandler(async (req, res) => {
+export async function atualizarLivro(req: Request, res: Response): Promise<void> {
   const id = Number(req.params.id);
   const dados = req.body as Partial<NovoLivro>;
   const livro = await LivroModel.atualizar(id, dados);
@@ -31,9 +31,9 @@ export const atualizarLivro = asyncHandler(async (req, res) => {
     return;
   }
   res.json(livro);
-});
+}
 
-export const excluirLivro = asyncHandler(async (req, res) => {
+export async function excluirLivro(req: Request, res: Response): Promise<void> {
   const id = Number(req.params.id);
   const removidos = await LivroModel.excluir(id);
   if (removidos === 0) {
@@ -41,4 +41,4 @@ export const excluirLivro = asyncHandler(async (req, res) => {
     return;
   }
   res.status(204).send();
-});
+}

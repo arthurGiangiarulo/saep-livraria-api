@@ -7,14 +7,15 @@ import {
   livrosDaEditora,
   mostrarEditora,
 } from '../controllers/editorasController';
+import { asyncHandler } from '../middlewares/asyncHandler';
 
 const router = Router();
 
-router.get('/editoras', listarEditoras);
-router.get('/editoras/:id', mostrarEditora);
-router.get('/editoras/:id/livros', livrosDaEditora);
-router.post('/editoras', criarEditora);
-router.put('/editoras/:id', atualizarEditora);
-router.delete('/editoras/:id', excluirEditora);
+router.get('/editoras', asyncHandler(listarEditoras));
+router.get('/editoras/:id', asyncHandler(mostrarEditora));
+router.get('/editoras/:id/livros', asyncHandler(livrosDaEditora));
+router.post('/editoras', asyncHandler(criarEditora));
+router.put('/editoras/:id', asyncHandler(atualizarEditora));
+router.delete('/editoras/:id', asyncHandler(excluirEditora));
 
 export default router;

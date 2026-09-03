@@ -6,13 +6,14 @@ import {
   listarLivros,
   mostrarLivro,
 } from '../controllers/livrosController';
+import { asyncHandler } from '../middlewares/asyncHandler';
 
 const router = Router();
 
-router.get('/livros', listarLivros);
-router.get('/livros/:id', mostrarLivro);
-router.post('/livros', criarLivro);
-router.put('/livros/:id', atualizarLivro);
-router.delete('/livros/:id', excluirLivro);
+router.get('/livros', asyncHandler(listarLivros));
+router.get('/livros/:id', asyncHandler(mostrarLivro));
+router.post('/livros', asyncHandler(criarLivro));
+router.put('/livros/:id', asyncHandler(atualizarLivro));
+router.delete('/livros/:id', asyncHandler(excluirLivro));
 
 export default router;
