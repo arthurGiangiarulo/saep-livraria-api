@@ -1,48 +1,78 @@
-# Plano de testes — API Livraria (testes **unitários**)
+# Tarefa — testes da API Livraria
 
-> Aqui a gente testa os **controllers isoladamente**, **mockando** o model (a dependência).
-> O banco **não** é tocado — por isso os testes rodam sem Docker/pg. Os **enunciados** de cada
-> teste são apresentados em aula (slide); abaixo fica o resumo + o "como".
+Os testes rodam **contra o banco de verdade** (com seed). Nada de mock aqui: você chama a API
+com `supertest` e confere o que voltou. O exemplo `GET /autores` já está pronto em
+`tests/exemplo.test.ts` — use de modelo.
 
-## O padrão (siga o exemplo pronto em `tests/controllers/autoresController.test.ts`)
+## Requisitos da tarefa
 
-```ts
-jest.mock('../../src/models/autor');          // troca o model por fakes (jest.fn)
-const model = jest.mocked(AutorModel);
+1. **Commits semânticos (Conventional Commits)** — o Husky recusa mensagem fora do padrão.
+   Tipos: `feat:` `fix:` `test:` `refactor:` `docs:` `chore:`. Exemplos mais abaixo.
+2. **Sem warnings do ESLint** — rode `npm run lint` e deixe **limpo** (`npm run lint:fix` ajuda).
+3. **Fluxo obrigatório** (é isso que estamos treinando):
+   1. **Monte o plano inteiro primeiro**: crie os arquivos de teste só com `describe` + `it.todo`
+      (um `it.todo` por caso da lista abaixo). **Commit:** `test: plano de testes da API`.
+   2. **Depois resolva arquivo a arquivo**: implemente um arquivo, rode, veja verde, **commit**.
+      Repita. Um commit por arquivo (ou por caso, se preferir granular).
 
-model.pegarPorId.mockResolvedValue(undefined); // arrange: o que o model "responde"
-const res = mockRes();                          // res falso com espiões
+## Antes de começar: conectar e rodar o seed
 
-await mostrarAutor(mockReq({ params: { id: '9' } }), res);  // act
+```bash
+# 1. variáveis de conexão
+cp .env.example .env
 
-expect(res.status).toHaveBeenCalledWith(404);   // assert: o controller reagiu certo
+# 2. sobe o Postgres já com as tabelas e a semente (roda db/init.sql sozinho)
+docker compose up -d
+
+#    (alternativa, se você tem um Postgres próprio: ajuste o .env e rode)
+# npm run db:reset      # aplica schema + seed
+
+# 3. dependências
+npm install
+
+# 4. confira que o banco respondeu (opcional, pela extensão do VS Code ou:)
+npm run db:reset        # recria schema + seed a qualquer momento
 ```
 
-Três peças: **`jest.mock`** (dependência falsa) · **`mockReq`/`mockRes`** (entrada/saída falsas) ·
-**`expect(...).toHaveBeenCalledWith(...)`** (o que o controller fez).
+Semente: **3 autores** (1 JRR Tolkien, 2 Ursula LeGuin, 3 Machado de Assis) ·
+**4 editoras** · **5 livros** (Tolkien tem 2). Cada teste recomeça limpo (o `beforeEach` reseta).
 
-## Enunciados
+## A lista — o que testar (um `it` por item)
 
-### autoresController
-- [x] `listarAutores` responde com a lista que o model devolve *(exemplo pronto)*
-- [ ] `mostrarAutor`: model devolve um autor → responde **200** com o autor
-- [ ] `mostrarAutor`: model devolve `undefined` → responde **404**
-- [ ] `criarAutor`: chama `AutorModel.criar` com o body e responde **201** com o autor criado
-- [ ] `atualizarAutor`: autor existe → responde com o autor atualizado
-- [ ] `atualizarAutor`: não existe → **404**
-- [ ] `excluirAutor`: removeu (1) → **204**
-- [ ] `excluirAutor`: não removeu (0) → **404**
-- [ ] `livrosDoAutor`: responde com os livros de `LivroModel.porAutor`
+### `tests/autores.test.ts`
+- [ ] `GET /autores` → **200** e **3** autores
+- [ ] `GET /autores/1` → **200**, `nome` = "JRR Tolkien"
+- [ ] `GET /autores/999` → **404**
+- [ ] `POST /autores` (`{ nome, nacionalidade }`) → **201** com o autor criado (tem `id`)
+- [ ] `PUT /autores/1` (`{ nacionalidade }`) → **200** com a nacionalidade nova
+- [ ] `DELETE /autores/:id` → **crie** um autor novo (sem livros) e delete-o → **204**
+- [ ] `GET /autores/1/livros` → **2** livros
 
-### livrosController (espelhe o de autores)
-- [ ] `listarLivros` responde com a lista
-- [ ] `mostrarLivro`: existe → **200** · não existe → **404**
-- [ ] `criarLivro`: chama `criar` com o body e responde **201**
-- [ ] `atualizarLivro`: existe → atualizado · não existe → **404**
-- [ ] `excluirLivro`: removeu → **204** · não removeu → **404**
+### `tests/editoras.test.ts`
+- [ ] `GET /editoras` → **200** e **4** editoras
+- [ ] `GET /editoras/1` → **200**
+- [ ] `GET /editoras/999` → **404**
+- [ ] `POST /editoras` (`{ nome, cidade, email }`) → **201**
+- [ ] `PUT /editoras/1` → **200**
+- [ ] `DELETE /editoras/:id` → **crie** uma editora nova e delete-a → **204**
 
-### editorasController
-Igualzinho ao de autores — prática extra por conta.
+### `tests/livros.test.ts`
+- [ ] `GET /livros` → **200** e **5** livros
+- [ ] `GET /livros/1` → **200**, `titulo` = "O Hobbit"
+- [ ] `GET /livros/999` → **404**
+- [ ] `POST /livros` (`{ titulo, paginas, autor_id, editora_id }`) → **201**
+- [ ] `PUT /livros/1` (`{ paginas }`) → **200**
+- [ ] `DELETE /livros/5` → **204**
 
-> 🎯 Repare que os testes de **404** cobrem o outro **ramo** de cada `if` — é assim que se
-> fecha 100% de branch (rode `npm run test:cov`).
+> 🔑 **Pegadinha das FKs:** no Postgres a *foreign key* é obrigatória. Deletar um autor/editora
+> que **tem livros** dá erro. Por isso o DELETE cria um registro novo (sem livros) e deleta esse.
+
+## Exemplos de commit semântico
+
+```bash
+git commit -m "test: plano de testes da API"       # o plano inteiro (it.todo)
+git commit -m "test: testes de autores"            # implementou tests/autores.test.ts
+git commit -m "test: testes de editoras"
+git commit -m "test: testes de livros"
+git commit -m "fix: corrige id no teste de DELETE"
+```
