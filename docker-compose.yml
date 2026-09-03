@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: livraria-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: livraria
+      POSTGRES_PASSWORD: livraria
+      POSTGRES_DB: livraria
+    ports:
+      - "5432:5432"
+    volumes:
+      # roda o schema + seed automaticamente na primeira subida do container
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - livraria_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U livraria -d livraria"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  livraria_data:
