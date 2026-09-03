@@ -8,21 +8,42 @@ exercício da UC Teste de Sistemas e ensaio pra prova prática do SAEP (banco �
 
 ## Pré-requisitos
 - **Node.js** 20+
-- **Docker** (pra subir o Postgres)
+- **PostgreSQL** instalado e rodando
+- **DBeaver** (cliente pra criar e ver o banco)
 
-## Como rodar
+## Passo a passo (setup)
 
-Os testes rodam **contra o banco** — suba o Postgres primeiro:
+### 1. Criar o banco no DBeaver
+1. Abra o **DBeaver** → **Nova conexão** (ícone de tomada) → **PostgreSQL**.
+2. Preencha: **Host** `localhost` · **Port** `5432` · **Username** e **Password** do seu Postgres · **Database** `postgres`.
+3. **Test Connection** (baixa o driver se pedir) → **Finish**.
+4. Crie o banco da aula: clique com o **direito** na conexão → **Create New Database** → nome **`livraria`** → OK.
+   *(alternativa: abra um SQL Editor e rode `CREATE DATABASE livraria;`)*
 
+### 2. Instalar o projeto
 ```bash
-cp .env.example .env
-docker compose up -d      # Postgres já com schema + semente (db/init.sql)
+git clone https://github.com/arthurGiangiarulo/saep-livraria-api.git
+cd saep-livraria-api
+cp .env.example .env          # ajuste DB_USER / DB_PASSWORD com os do seu Postgres
 npm install
-npm test
 ```
 
-Pra ver a API na mão (Postman/navegador): `npm run dev` → `http://localhost:3000`.
-O passo a passo completo da tarefa (conectar, semear, o fluxo de commits) está em **`TESTES.md`**.
+### 3. Rodar o seeder (cria as tabelas + popula)
+```bash
+npm run db:reset              # o SEEDER: aplica o schema + a semente no banco 'livraria'
+```
+Confira no DBeaver (atualize com F5): as tabelas `autores`, `editoras` e `livros` aparecem populadas.
+
+### 4. Rodar os testes
+```bash
+npm test                      # o exemplo GET /autores fica verde
+```
+
+Pronto — agora comece a resolver a tarefa (ver **`TESTES.md`**).
+Pra ver a API na mão: `npm run dev` → `http://localhost:3000`.
+
+> 💡 Não quer instalar o Postgres? Há um `docker-compose.yml` no repo (`docker compose up -d` sobe
+> um Postgres já semeado) — mas o caminho oficial da tarefa é o **DBeaver + Postgres local** acima.
 
 ### Ver o banco pelo VS Code
 Instale a extensão **SQLTools** (+ *SQLTools PostgreSQL Driver*) ou a extensão **PostgreSQL** e

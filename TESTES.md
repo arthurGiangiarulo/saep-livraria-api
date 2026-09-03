@@ -15,24 +15,14 @@ com `supertest` e confere o que voltou. O exemplo `GET /autores` já está pront
    2. **Depois resolva arquivo a arquivo**: implemente um arquivo, rode, veja verde, **commit**.
       Repita. Um commit por arquivo (ou por caso, se preferir granular).
 
-## Antes de começar: conectar e rodar o seed
+## Antes de começar: banco + seed
 
-```bash
-# 1. variáveis de conexão
-cp .env.example .env
+Faça o **setup do `README.md`** (é o passo a passo completo):
 
-# 2. sobe o Postgres já com as tabelas e a semente (roda db/init.sql sozinho)
-docker compose up -d
-
-#    (alternativa, se você tem um Postgres próprio: ajuste o .env e rode)
-# npm run db:reset      # aplica schema + seed
-
-# 3. dependências
-npm install
-
-# 4. confira que o banco respondeu (opcional, pela extensão do VS Code ou:)
-npm run db:reset        # recria schema + seed a qualquer momento
-```
+1. No **DBeaver**, conecte no seu Postgres e crie o banco **`livraria`**.
+2. `cp .env.example .env` (ajuste usuário/senha) · `npm install`.
+3. **`npm run db:reset`** — o **seeder**: cria as tabelas e popula.
+4. `npm test` — o exemplo `GET /autores` deve ficar verde.
 
 Semente: **3 autores** (1 JRR Tolkien, 2 Ursula LeGuin, 3 Machado de Assis) ·
 **4 editoras** · **5 livros** (Tolkien tem 2). Cada teste recomeça limpo (o `beforeEach` reseta).
