@@ -1,39 +1,28 @@
-import db from '../db/dbconfig';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
-export interface Editora {
-  id: number;
-  nome: string;
-  cidade: string;
-  email: string;
-  created_at: Date;
-  updated_at: Date;
+@Entity('editoras')
+export class Editora {
+  @PrimaryGeneratedColumn()
+  id!: number;
+
+  @Column()
+  nome!: string;
+
+  @Column()
+  cidade!: string;
+
+  @Column()
+  email!: string;
+
+  @CreateDateColumn()
+  created_at!: Date;
+
+  @UpdateDateColumn()
+  updated_at!: Date;
 }
-
-export type NovaEditora = Pick<Editora, 'nome' | 'cidade' | 'email'>;
-
-export const EditoraModel = {
-  listar(): Promise<Editora[]> {
-    return db<Editora>('editoras').select('*').orderBy('id');
-  },
-
-  pegarPorId(id: number): Promise<Editora | undefined> {
-    return db<Editora>('editoras').where({ id }).first();
-  },
-
-  async criar(dados: NovaEditora): Promise<Editora> {
-    const [editora] = await db<Editora>('editoras').insert(dados).returning('*');
-    return editora;
-  },
-
-  async atualizar(id: number, dados: Partial<NovaEditora>): Promise<Editora | undefined> {
-    const [editora] = await db<Editora>('editoras')
-      .where({ id })
-      .update({ ...dados, updated_at: new Date() })
-      .returning('*');
-    return editora;
-  },
-
-  excluir(id: number): Promise<number> {
-    return db<Editora>('editoras').where({ id }).del();
-  },
-};

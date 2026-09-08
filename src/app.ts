@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import express, { type Express } from 'express';
 import rotas from './routes';
 

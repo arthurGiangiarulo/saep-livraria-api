@@ -1,14 +1,15 @@
 import type { Request, Response } from 'express';
-import { LivroModel, type NovoLivro } from '../models/livro';
+import { AppDataSource } from '../db/dataSource';
+import { Livro } from '../models/livro';
+
+const livros = () => AppDataSource.getRepository(Livro);
 
 export async function listarLivros(_req: Request, res: Response): Promise<void> {
-  const livros = await LivroModel.listar();
-  res.json(livros);
+  res.json(await livros().find({ order: { id: 'ASC' } }));
 }
 
 export async function mostrarLivro(req: Request, res: Response): Promise<void> {
-  const id = Number(req.params.id);
-  const livro = await LivroModel.pegarPorId(id);
+  const livro = await livros().findOneBy({ id: Number(req.params.id) });
   if (!livro) {
     res.status(404).json({ erro: 'Livro não encontrado' });
     return;
@@ -17,26 +18,27 @@ export async function mostrarLivro(req: Request, res: Response): Promise<void> {
 }
 
 export async function criarLivro(req: Request, res: Response): Promise<void> {
-  const dados = req.body as NovoLivro;
-  const livro = await LivroModel.criar(dados);
+  const dados = req.body as Partial<Livro>;
+  const livro = livros().create(dados);
+  await livros().save(livro);
   res.status(201).json(livro);
 }
 
 export async function atualizarLivro(req: Request, res: Response): Promise<void> {
-  const id = Number(req.params.id);
-  const dados = req.body as Partial<NovoLivro>;
-  const livro = await LivroModel.atualizar(id, dados);
+  const repo = livros();
+  const livro = await repo.findOneBy({ id: Number(req.params.id) });
   if (!livro) {
     res.status(404).json({ erro: 'Livro não encontrado' });
     return;
   }
+  repo.merge(livro, req.body as Partial<Livro>);
+  await repo.save(livro);
   res.json(livro);
 }
 
 export async function excluirLivro(req: Request, res: Response): Promise<void> {
-  const id = Number(req.params.id);
-  const removidos = await LivroModel.excluir(id);
-  if (removidos === 0) {
+  const resultado = await livros().delete(Number(req.params.id));
+  if (resultado.affected === 0) {
     res.status(404).json({ erro: 'Livro não encontrado' });
     return;
   }

@@ -35,7 +35,7 @@ Semente: **3 autores** (1 JRR Tolkien, 2 Ursula LeGuin, 3 Machado de Assis) ·
 - [ ] `GET /autores/999` → **404**
 - [ ] `POST /autores` (`{ nome, nacionalidade }`) → **201** com o autor criado (tem `id`)
 - [ ] `PUT /autores/1` (`{ nacionalidade }`) → **200** com a nacionalidade nova
-- [ ] `DELETE /autores/:id` → **crie** um autor novo (sem livros) e delete-o → **204**
+- [ ] `DELETE /autores/:id` → deleta um autor existente e responde **204**
 - [ ] `GET /autores/1/livros` → **2** livros
 
 ### `tests/editoras.test.ts`
@@ -44,7 +44,7 @@ Semente: **3 autores** (1 JRR Tolkien, 2 Ursula LeGuin, 3 Machado de Assis) ·
 - [ ] `GET /editoras/999` → **404**
 - [ ] `POST /editoras` (`{ nome, cidade, email }`) → **201**
 - [ ] `PUT /editoras/1` → **200**
-- [ ] `DELETE /editoras/:id` → **crie** uma editora nova e delete-a → **204**
+- [ ] `DELETE /editoras/:id` → deleta uma editora existente e responde **204**
 
 ### `tests/livros.test.ts`
 - [ ] `GET /livros` → **200** e **5** livros
@@ -54,8 +54,8 @@ Semente: **3 autores** (1 JRR Tolkien, 2 Ursula LeGuin, 3 Machado de Assis) ·
 - [ ] `PUT /livros/1` (`{ paginas }`) → **200**
 - [ ] `DELETE /livros/5` → **204**
 
-> 🔑 **Pegadinha das FKs:** no Postgres a *foreign key* é obrigatória. Deletar um autor/editora
-> que **tem livros** dá erro. Por isso o DELETE cria um registro novo (sem livros) e deleta esse.
+> 🎯 Os testes de **404** (recurso que não existe) cobrem o **outro ramo** do `if` de cada
+> controller — é assim que se fecha 100% de branch (`npm run test:cov`).
 
 ## Exemplos de commit semântico
 

@@ -1,7 +1,7 @@
 # API Livraria — base de testes (SAEP)
 
 API REST de uma livraria (autores, editoras, livros) para praticar **testes que rodam contra o
-banco** (com seed) com **TypeScript + Express + knex + PostgreSQL + Jest/supertest**. Base do
+banco** (com seed) com **TypeScript + Express + TypeORM + PostgreSQL + Jest/supertest**. Base do
 exercício da UC Teste de Sistemas e ensaio pra prova prática do SAEP (banco ↔ back).
 
 > A API já vem **pronta e funcionando**. Seu trabalho é **escrever os testes** (ver `TESTES.md`).
@@ -69,19 +69,19 @@ nas tabelas e rodar consultas sem sair do editor.
 
 ```
 saep-livraria-api/
-├─ docker-compose.yml      ← sobe o Postgres
-├─ db/init.sql             ← schema + semente (rodado pelo Docker)
 ├─ src/
-│  ├─ db/dbconfig.ts       ← conexão knex → pg (via .env)
-│  ├─ models/              ← autor.ts · editora.ts · livro.ts
-│  ├─ controllers/         ← regras de cada rota
+│  ├─ db/
+│  │  ├─ dataSource.ts     ← conexão TypeORM → pg (via .env)
+│  │  └─ seed.ts           ← limpa + semeia o banco
+│  ├─ models/              ← as entities: autor.ts · editora.ts · livro.ts
+│  ├─ controllers/         ← regras de cada rota (usam o repository)
 │  ├─ routes/              ← autores/editoras/livros + index
 │  ├─ middlewares/         ← asyncHandler
 │  ├─ app.ts               ← o Express app (exportado pros testes)
-│  └─ server.ts            ← sobe o servidor
+│  └─ server.ts            ← inicializa o banco e sobe o servidor
+├─ scripts/reset-db.ts     ← o seeder (npm run db:reset)
 └─ tests/
-   ├─ helpers/db.ts          ← reseta o banco (seed) entre os testes
-   └─ exemplo.test.ts        ← 1 teste pronto (modelo) — você cria os demais
+   └─ helpers/db.ts        ← reseta o banco (seed) entre os testes
 ```
 
 ## Endpoints
@@ -91,8 +91,8 @@ saep-livraria-api/
 `/livros` · `GET` (lista) · `GET /:id` · `POST` · `PUT /:id` · `DELETE /:id`
 
 ## O exercício
-Escreva os testes da API — eles rodam **contra o banco** (com seed). O `GET /autores` já está
-feito como modelo em `tests/exemplo.test.ts`. Siga o **fluxo do `TESTES.md`**: primeiro monte o
+Escreva os testes da API — eles rodam **contra o banco** (com seed). A pasta `tests/` vem **vazia**:
+os testes a gente escreve **juntos, seguindo os slides**. Siga o **fluxo do `TESTES.md`**: primeiro monte o
 **plano inteiro** (`describe` + `it.todo`) e **commite**; depois implemente **arquivo a arquivo**,
 **commitando cada parte** — com **commits semânticos** (o Husky exige) e **ESLint limpo**.
 Meta: tudo verde. A **solução** fica com o professor.
@@ -104,4 +104,4 @@ Meta: tudo verde. A **solução** fica com o professor.
 - **Husky + commitlint** → os commits seguem **Conventional Commits** (`feat:`, `fix:`, `test:`,
   `docs:`, `chore:`…). Commit fora do padrão é recusado.
 - **lint-staged** → ao commitar, o ESLint roda só nos arquivos alterados.
-- **Docker Compose** → Postgres reproduzível, sem instalar banco na máquina.
+- **TypeORM** → *entities* + *repository*; o `synchronize` cria as tabelas a partir das entities.

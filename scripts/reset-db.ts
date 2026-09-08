@@ -1,14 +1,14 @@
+import 'reflect-metadata';
 import 'dotenv/config';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
-import db from '../src/db/dbconfig';
+import { AppDataSource } from '../src/db/dataSource';
+import { limpar, semear } from '../src/db/seed';
 
 async function reset(): Promise<void> {
-  await db.raw('DROP TABLE IF EXISTS livros, editoras, autores CASCADE');
-  const sql = readFileSync(join(__dirname, '../db/init.sql'), 'utf-8');
-  await db.raw(sql);
-  console.log('Banco resetado (schema + seed).');
-  await db.destroy();
+  await AppDataSource.initialize(); // synchronize cria/atualiza as tabelas
+  await limpar();
+  await semear();
+  console.log('Banco resetado (schema via synchronize + seed).');
+  await AppDataSource.destroy();
 }
 
 reset().catch((erro: unknown) => {
