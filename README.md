@@ -13,9 +13,12 @@ exercício da UC Teste de Sistemas e ensaio pra prova prática do SAEP (banco �
 
 ## Etapa 1 — preparar o ambiente
 
-### 1. Clonar e instalar
+### 1. Fork + clonar + instalar
+Primeiro faça **fork** deste repositório (botão **Fork**, canto superior direito) — assim você
+tem uma cópia **sua**, pra onde vai dar `push` dos seus commits. Depois clone o **SEU** fork:
+
 ```bash
-git clone https://github.com/arthurGiangiarulo/saep-livraria-api.git
+git clone https://github.com/SEU-USUARIO/saep-livraria-api.git
 cd saep-livraria-api
 cp .env.example .env
 npm install
