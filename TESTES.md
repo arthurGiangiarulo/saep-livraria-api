@@ -1,8 +1,8 @@
 # Tarefa — testes da API Livraria
 
 Os testes rodam **contra o banco de verdade** (com seed). Nada de mock aqui: você chama a API
-com `supertest` e confere o que voltou. O exemplo `GET /autores` já está pronto em
-`tests/exemplo.test.ts` — use de modelo.
+com `supertest` e confere o que voltou. A pasta `tests/` começa **vazia** — a gente escreve os
+testes juntos, seguindo os slides; o padrão está logo abaixo (e no slide da aula).
 
 ## Requisitos da tarefa
 

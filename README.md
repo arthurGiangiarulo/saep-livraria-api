@@ -8,42 +8,42 @@ exercício da UC Teste de Sistemas e ensaio pra prova prática do SAEP (banco �
 
 ## Pré-requisitos
 - **Node.js** 20+
-- **PostgreSQL** instalado e rodando
-- **DBeaver** (cliente pra criar e ver o banco)
+- Conta no **[Supabase](https://supabase.com)** (grátis) — o banco fica na nuvem, sem instalar Postgres
+- **DBeaver** (opcional, pra inspecionar o banco)
 
-## Passo a passo (setup)
+## Etapa 1 — preparar o ambiente
 
-### 1. Criar o banco no DBeaver
-1. Abra o **DBeaver** → **Nova conexão** (ícone de tomada) → **PostgreSQL**.
-2. Preencha: **Host** `localhost` · **Port** `5432` · **Username** e **Password** do seu Postgres · **Database** `postgres`.
-3. **Test Connection** (baixa o driver se pedir) → **Finish**.
-4. Crie o banco da aula: clique com o **direito** na conexão → **Create New Database** → nome **`livraria`** → OK.
-   *(alternativa: abra um SQL Editor e rode `CREATE DATABASE livraria;`)*
-
-### 2. Instalar o projeto
+### 1. Clonar e instalar
 ```bash
 git clone https://github.com/arthurGiangiarulo/saep-livraria-api.git
 cd saep-livraria-api
-cp .env.example .env          # ajuste DB_USER / DB_PASSWORD com os do seu Postgres
+cp .env.example .env
 npm install
 ```
 
-### 3. Rodar o seeder (cria as tabelas + popula)
+### 2. Criar o banco no Supabase
+1. Em **supabase.com** → **New project**. Dê um nome e **defina/guarde a senha do banco**.
+2. Espere provisionar (~1 min).
+3. Botão **Connect** (topo) → aba **Connection string** → escolha **Session pooler**.
+   *(o Session pooler funciona em rede **IPv4** — o caso do laboratório; o "Direct" é só IPv6.)*
+4. Copie a URI e cole no `.env` em **`DATABASE_URL=`**, trocando `[YOUR-PASSWORD]` pela senha do projeto.
+
+> 👥 Cada aluno cria o **seu próprio** projeto Supabase. Os testes **limpam e re-semeiam** o banco a
+> cada rodada — num banco compartilhado, um aluno apagaria os dados do outro.
+
+### 3. Rodar o seeder
 ```bash
-npm run db:reset              # o SEEDER: aplica o schema + a semente no banco 'livraria'
+npm run db:reset     # cria as tabelas + a semente (3 autores, 4 editoras, 5 livros) no seu Supabase
 ```
-Confira no DBeaver (atualize com F5): as tabelas `autores`, `editoras` e `livros` aparecem populadas.
+Confira no Supabase (**Table Editor**) — ou conecte o **DBeaver** com os dados da mesma connection
+string (SSL ligado) — que as tabelas apareceram populadas.
 
-### 4. Rodar os testes
-```bash
-npm test                      # o exemplo GET /autores fica verde
-```
+### 4. Pronto pra começar
+A pasta `tests/` vem **vazia de propósito**: os testes a gente escreve **juntos, seguindo os slides**.
+Pra ver a API rodando: `npm run dev` → `http://localhost:3000`.
 
-Pronto — agora comece a resolver a tarefa (ver **`TESTES.md`**).
-Pra ver a API na mão: `npm run dev` → `http://localhost:3000`.
-
-> 💡 Não quer instalar o Postgres? Há um `docker-compose.yml` no repo (`docker compose up -d` sobe
-> um Postgres já semeado) — mas o caminho oficial da tarefa é o **DBeaver + Postgres local** acima.
+> 💡 **Sem Supabase?** Dá pra usar um **Postgres local** (Opção B do `.env`): crie o banco `livraria`
+> no DBeaver e preencha `DB_HOST`/`DB_USER`/`DB_PASSWORD`. Há também um `docker-compose.yml` no repo.
 
 ### Ver o banco pelo VS Code
 Instale a extensão **SQLTools** (+ *SQLTools PostgreSQL Driver*) ou a extensão **PostgreSQL** e
