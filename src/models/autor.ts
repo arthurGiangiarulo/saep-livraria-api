@@ -1,4 +1,5 @@
 import {
+  BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
@@ -7,14 +8,14 @@ import {
 } from 'typeorm';
 
 @Entity('autores')
-export class Autor {
+export class Autor extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
+  @Column('varchar')
   nome!: string;
 
-  @Column()
+  @Column('varchar')
   nacionalidade!: string;
 
   @CreateDateColumn()
@@ -22,4 +23,9 @@ export class Autor {
 
   @UpdateDateColumn()
   updated_at!: Date;
+
+  constructor(dados?: Partial<Autor>) {
+    super();
+    if (dados) Object.assign(this, dados);
+  }
 }
