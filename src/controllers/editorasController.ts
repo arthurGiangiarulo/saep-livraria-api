@@ -32,7 +32,7 @@ export async function criarEditora(req: Request, res: Response): Promise<void> {
 
   const editora = editoras().create(dados);
   await editoras().save(editora);
-  res.status(201).json(editora);
+  res.status(200).json(editora);
 }
 
 export async function atualizarEditora(req: Request, res: Response): Promise<void> {
